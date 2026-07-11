@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema<IUser>(
         },
         lastDonationDate : {
             type : Date,
-            default : true,
+            default : null,
         },
         isAvailable : {
             type : Boolean,

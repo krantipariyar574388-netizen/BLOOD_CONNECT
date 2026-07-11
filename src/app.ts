@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 // import { errorHandling } from './middleware/errorHandler.middleware';
 import bloodRequestRoutes from './routes/bloodRequest.route';
+import userRoutes from './routes/user.route';
 
 const app = express();
 
@@ -16,5 +17,6 @@ app.get("/",(req : Request, res : Response) => {
 });
 
 app.use('/bloodrequests', bloodRequestRoutes);
+app.use('/users', userRoutes);
 
 export default app;
