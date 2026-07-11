@@ -70,3 +70,47 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     },
   });
 });
+
+export const getEligibleDonors = catchAsync(async (req: Request, res: Response) => {
+  const { bloodGroup, district } = req.query;
+
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
+  let filter: any = {
+    role: 'donor',
+    $or: [
+      { lastDonationDate: { $exists: false } },
+      { lastDonationDate: null },
+      { lastDonationDate: { $lte: ninetyDaysAgo } }
+    ]
+  };
+
+  // Simple Blood Group Filter (Bina Regex)
+  if (bloodGroup) {
+    filter.bloodGroup = String(bloodGroup).trim().toUpperCase();
+  }
+
+  // District Filter (Simple Search)
+  if (district) {
+    filter.district = String(district).trim();
+  }
+
+  const donors = await User.find(filter).select('-password');
+
+  const hasDonors = donors.length > 0;
+  
+  let dynamicMessage = 'Eligible donors fetched successfully';
+  if (!hasDonors) {
+    dynamicMessage = district 
+      ? `No eligible donors found in ${district}` 
+      : 'No eligible donors found matching your criteria';
+  }
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: dynamicMessage,
+    data: donors,
+  });
+});
