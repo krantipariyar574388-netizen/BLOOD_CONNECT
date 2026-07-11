@@ -33,7 +33,7 @@ export const getActiveRequests = catchAsync(async (req: Request, res: Response) 
   let filter: any = { };
 
   if (status) {
-    filter.status = new RegExp(`^${status}$`, 'i'); // Case-insensitive exact match
+    filter.status = new RegExp(`^${status}$`, 'i');
   }
 
   if (bloodGroup) filter.bloodGroup = bloodGroup;

@@ -6,7 +6,7 @@ import { CustomError } from '../utils/customError.util';
 import { User } from '../models/user.model';
 
 export const register = catchAsync(async (req: Request, res: Response) => {
-  const { name, email, password, phone, bloodGroup, district, role } = req.body;
+  const { name, email, password, phone, bloodGroup, district, role, lastDonationDate } = req.body;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -16,6 +16,8 @@ export const register = catchAsync(async (req: Request, res: Response) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
+  const formattedDonationDate = lastDonationDate ? new Date(lastDonationDate) : null;
+
   const newUser = await User.create({
     name,
     email,
@@ -24,6 +26,7 @@ export const register = catchAsync(async (req: Request, res: Response) => {
     bloodGroup,
     district,
     role,
+    lastDonationDate: formattedDonationDate,
   });
 
   sendResponse(res, {
@@ -86,12 +89,10 @@ export const getEligibleDonors = catchAsync(async (req: Request, res: Response) 
     ]
   };
 
-  // Simple Blood Group Filter (Bina Regex)
   if (bloodGroup) {
     filter.bloodGroup = String(bloodGroup).trim().toUpperCase();
   }
 
-  // District Filter (Simple Search)
   if (district) {
     filter.district = String(district).trim();
   }
