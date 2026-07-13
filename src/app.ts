@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { errorHandler } from './middlewares/errorHandler.middleware';
-// import bloodRequestRoutes from './routes/bloodRequest.route';
+import bloodRequestRoutes from './routes/bloodRequest.route';
 import userRoutes from './routes/user.route';
 import { AppError } from "./utils/customError.util";
 
@@ -17,7 +17,7 @@ app.get("/",(req : Request, res : Response) => {
     });
 });
 
-// app.use('/bloodrequests', bloodRequestRoutes);
+app.use('/bloodrequests', bloodRequestRoutes);
 app.use('/users', userRoutes);
 
 app.use((req, res, next) => {

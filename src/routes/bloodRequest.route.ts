@@ -1,14 +1,18 @@
-// import express, { Router } from 'express';
-// import {
-//   createBloodRequest,
-//   getActiveRequests,
-//   updateRequestStatus,
-// } from '../controllers/bloodRequest.controller';
+import express, { Router } from 'express';
+import {
+  createBloodRequest,
+  getAllBloodRequests,
+  getBloodRequestById,
+  updateBloodRequestStatus,
+  deleteBloodRequest,
+} from '../controllers/bloodRequest.controller';
 
-// const router : Router = express.Router();
+const router : Router = express.Router();
 
-// router.post('/', createBloodRequest);
-// router.get('/', getActiveRequests);
-// router.patch('/:id/status', updateRequestStatus);
+router.post('/', createBloodRequest);
+router.get('/', getAllBloodRequests);
+router.get('/:id',getBloodRequestById);
+router.patch('/:id/status', updateBloodRequestStatus);
+router.delete('/:id/',deleteBloodRequest);
 
-// export default router;
+export default router;

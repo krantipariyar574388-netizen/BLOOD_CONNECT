@@ -9,6 +9,13 @@ export enum BloodGroup {
   O_NEGATIVE = 'O-',
 }
 
+export enum RequestUrgency {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
 export enum RequestStatus {
   PENDING = 'Pending',
   FULFILLED = 'Fulfilled',
