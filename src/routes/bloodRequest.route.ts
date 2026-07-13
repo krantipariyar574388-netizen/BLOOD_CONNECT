@@ -6,10 +6,14 @@ import {
   updateBloodRequestStatus,
   deleteBloodRequest,
 } from '../controllers/bloodRequest.controller';
+import { uploader } from "../middlewares/multer.middleware";
 
 const router : Router = express.Router();
 
-router.post('/', createBloodRequest);
+// multer uploader
+const upload = uploader();
+
+router.post("/", upload.single("medicalDocument"), createBloodRequest);
 router.get('/', getAllBloodRequests);
 router.get('/:id',getBloodRequestById);
 router.patch('/:id/status', updateBloodRequestStatus);

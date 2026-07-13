@@ -19,6 +19,8 @@ export const createBloodRequest = cathAsync(
       requester,
     } = req.body;
 
+    const file = req.file;
+
     if (!patient) throw new AppError("Patient name is required", 400);
     if (!bloodGroup) throw new AppError("Blood group is required", 400);
     if (!units) throw new AppError("Units required is required", 400);
@@ -26,6 +28,10 @@ export const createBloodRequest = cathAsync(
     if (!district) throw new AppError("District is required", 400);
     if (!phone) throw new AppError("Contact phone number is required", 400);
     if (!requester) throw new AppError("Requester ID is required", 400);
+
+    if (!file) {
+      throw new AppError("Medical document / prescription image is required", 400);
+    }
 
     const newRequest = new BloodRequest({
       patient,
@@ -38,6 +44,7 @@ export const createBloodRequest = cathAsync(
       urgency: urgency || RequestUrgency.MEDIUM,
       requester,
       status: RequestStatus.PENDING,
+      medicalDocument: file.path,
     });
 
     await newRequest.save();
@@ -45,7 +52,7 @@ export const createBloodRequest = cathAsync(
     sendResponse(res, {
       statusCode: 201,
       success: true,
-      message: "Blood request created successfully!",
+      message: "Blood request created successfully with medical document!",
       data: newRequest,
     });
   }

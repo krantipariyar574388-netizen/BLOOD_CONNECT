@@ -9,9 +9,9 @@ export interface IBloodRequest extends Document {
     hospital : string;
     district  : string;
     phone : string;
-    profile_image? : string;
     urgency: RequestUrgency;
     status : RequestStatus;
+    medicalDocument: string;
     fulfilledBy? : Types.ObjectId | null;
 }
 
@@ -48,10 +48,6 @@ const bloodRequestSchema = new mongoose.Schema<IBloodRequest>({
         type: String,
         required: true
     },
-    profile_image: {
-      type: String,
-      default: "",
-    },
     urgency: {
       type: String,
       enum: Object.values(RequestUrgency),
@@ -61,6 +57,10 @@ const bloodRequestSchema = new mongoose.Schema<IBloodRequest>({
       type: String,
       enum: Object.values(RequestStatus),
       default: RequestStatus.PENDING,
+    },
+    medicalDocument: {
+      type: String,
+      required: [true, "Medical document or prescription is required"],
     },
     fulfilledBy: {
         type: Schema.Types.ObjectId,
