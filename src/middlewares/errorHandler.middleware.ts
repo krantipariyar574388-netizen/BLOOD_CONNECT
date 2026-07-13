@@ -8,7 +8,7 @@ export const errorHandler = (
     next : NextFunction
 ) => {
     const message = error?.status ?? "Something went wrong!";
-    // const status = error?.status ?? "error";
+    const status = error?.status ?? "error";
     const statusCode = error?.statusCode ?? 500;
 
     console.log(error);
