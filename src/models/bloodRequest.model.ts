@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 import { BloodGroup, RequestUrgency, RequestStatus } from '../@types/enum.types';
 
 export interface IBloodRequest extends Document {

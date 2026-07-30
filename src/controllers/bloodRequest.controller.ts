@@ -20,6 +20,7 @@ export const createBloodRequest = cathAsync(
     } = req.body;
 
     const file = req.file;
+    console.log(file);
 
     if (!patient) throw new AppError("Patient name is required", 400);
     if (!bloodGroup) throw new AppError("Blood group is required", 400);

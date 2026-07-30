@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { BloodGroup, UserRole } from "../@types/enum.types";
 
 export interface IUser extends Document {
