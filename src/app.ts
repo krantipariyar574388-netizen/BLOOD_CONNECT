@@ -3,10 +3,13 @@ import { errorHandler } from './middlewares/errorHandler.middleware';
 import bloodRequestRoutes from './routes/bloodRequest.route';
 import userRoutes from './routes/user.route';
 import { AppError } from "./utils/customError.util";
+import cookieParser from "cookie-parser";
+
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/",(req : Request, res : Response) => {
     res.status(200).json({
