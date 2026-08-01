@@ -4,7 +4,7 @@ import { RequestUrgency, RequestStatus } from "../@types/enum.types";
 import { AppError } from "../utils/customError.util";
 import { cathAsync } from "../utils/catchAsync.util";
 import { sendResponse } from "../utils/sendResponse.util";
-import { upload } from "../utils/cloudinary.util";
+import { deleteFileFromCloudinary, upload } from "../utils/cloudinary.util";
 
 export const createBloodRequest = cathAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -150,6 +150,7 @@ export const updateBloodRequestStatus = cathAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { status } = req.body;
+    const file = req.file;
 
     if (!status) throw new AppError("Status is required to update", 400);
 
@@ -161,6 +162,18 @@ export const updateBloodRequestStatus = cathAsync(
 
     if (!updatedRequest) {
       throw new AppError("Blood request not found", 404);
+    }
+
+    if (file) {
+      //delete old image
+      deleteFileFromCloudinary(updatedRequest.medicalDocument.public_id);
+
+      // upload new image
+      const { path, public_id} = await upload(file, "/medicalDocument");
+      updatedRequest.medicalDocument = {
+        path,
+        public_id,
+      };
     }
 
     sendResponse(res, {
@@ -176,11 +189,17 @@ export const deleteBloodRequest = cathAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const deletedRequest = await BloodRequest.findByIdAndDelete(id);
+    const deletedRequest = await BloodRequest.findById({
+      _id : id,
+    });
 
     if (!deletedRequest) {
       throw new AppError("Blood request not found", 404);
     }
+
+    await deleteFileFromCloudinary(deletedRequest.medicalDocument.public_id);
+
+    await deletedRequest.deleteOne();
 
     sendResponse(res, {
       statusCode: 200,
