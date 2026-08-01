@@ -1,5 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import { BloodGroup, UserRole } from "../@types/enum.types";
+import { ImageSchema } from "./image.model";
 
 export interface IUser extends Document {
   name: string;
@@ -9,7 +10,10 @@ export interface IUser extends Document {
   bloodGroup: BloodGroup;
   district: string;
   role: UserRole;
-  profile_image?: string;
+  profile_image?: {
+    path : string;
+    public_id : string;
+  };
   lastDonationDate?: Date | null;
   isAvailable: boolean;
 }
@@ -51,8 +55,8 @@ const userSchema = new mongoose.Schema<IUser>(
       default: UserRole.DONOR,
     },
     profile_image: {
-      type: String,
-      default: "",
+      type: ImageSchema,
+      default: null,
     },
     lastDonationDate: {
       type: Date,

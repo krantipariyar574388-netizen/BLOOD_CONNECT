@@ -4,6 +4,7 @@ import { RequestUrgency, RequestStatus } from "../@types/enum.types";
 import { AppError } from "../utils/customError.util";
 import { cathAsync } from "../utils/catchAsync.util";
 import { sendResponse } from "../utils/sendResponse.util";
+import { upload } from "../utils/cloudinary.util";
 
 export const createBloodRequest = cathAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +35,20 @@ export const createBloodRequest = cathAsync(
       throw new AppError("Medical document / prescription image is required", 400);
     }
 
+    const existingPendingRequest = await BloodRequest.findOne({
+      requester,
+      patient: patient.trim(),
+      hospital: hospital.trim(),
+      status: RequestStatus.PENDING,
+    });
+
+    if (existingPendingRequest) {
+      throw new AppError(
+        "A pending blood request for this patient at this hospital already exists!",
+        400
+      );
+    }
+
     const newRequest = new BloodRequest({
       patient,
       bloodGroup: bloodGroup.trim().toUpperCase(),
@@ -45,8 +60,19 @@ export const createBloodRequest = cathAsync(
       urgency: urgency || RequestUrgency.MEDIUM,
       requester,
       status: RequestStatus.PENDING,
-      medicalDocument: file.path,
+      medicalDocument: {
+        path : "",
+        public_id : ""
+      },
     });
+
+    if (file) {
+      const { path, public_id } = await upload(file, "/medical_document");
+      newRequest.medicalDocument = {
+        path : path,
+        public_id : public_id,
+      };
+    }
 
     await newRequest.save();
 

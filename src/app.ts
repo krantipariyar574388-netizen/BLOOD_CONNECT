@@ -4,9 +4,11 @@ import bloodRequestRoutes from './routes/bloodRequest.route';
 import userRoutes from './routes/user.route';
 import { AppError } from "./utils/customError.util";
 import cookieParser from "cookie-parser";
-
+import dotenv from "dotenv";
 
 const app = express();
+
+dotenv.config();
 
 app.use(express.json());
 app.use(cookieParser());

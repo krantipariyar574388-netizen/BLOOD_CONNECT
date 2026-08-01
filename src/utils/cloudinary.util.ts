@@ -1,4 +1,5 @@
 import cloudinary from "../config/cloudinary.config";
+import fs from "fs";
 
 export const upload = async (file : Express.Multer.File, dir = "/") => {
     try {
@@ -9,8 +10,21 @@ export const upload = async (file : Express.Multer.File, dir = "/") => {
                 resource_type : "auto",
                 unique_filename : true,
                 folder,
+                transformation : {
+                    width : 800,
+                    height : 800,
+                    crop : "fill",
+                    fetch_format : "auto",
+                    gravity : "face",
+                },
             },
         );
+
+        // delete from local uploads folder
+        if (fs.existsSync(file.path)) {
+            fs.unlinkSync(file.path);
+        }
+
         return {
             path,
             public_id,

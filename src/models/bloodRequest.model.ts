@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 import { BloodGroup, RequestUrgency, RequestStatus } from '../@types/enum.types';
+import { ImageSchema } from './image.model';
 
 export interface IBloodRequest extends Document {
     requester : Types.ObjectId;
@@ -11,7 +12,10 @@ export interface IBloodRequest extends Document {
     phone : string;
     urgency: RequestUrgency;
     status : RequestStatus;
-    medicalDocument: string;
+    medicalDocument: {
+        path : string;
+        public_id : string;
+    };
     fulfilledBy? : Types.ObjectId | null;
 }
 
@@ -59,8 +63,8 @@ const bloodRequestSchema = new mongoose.Schema<IBloodRequest>({
       default: RequestStatus.PENDING,
     },
     medicalDocument: {
-      type: String,
-      required: [true, "Medical document or prescription is required"],
+      type: ImageSchema,
+      required : [true, "Medical document is required!!"],
     },
     fulfilledBy: {
         type: Schema.Types.ObjectId,
@@ -69,6 +73,14 @@ const bloodRequestSchema = new mongoose.Schema<IBloodRequest>({
     },
   },
   { timestamps: true }
+);
+
+bloodRequestSchema.index(
+  { requester: 1, patient: 1, hospital: 1, status: 1 },
+  { 
+    unique: true, 
+    partialFilterExpression: { status: RequestStatus.PENDING } 
+  }
 );
 
 export const BloodRequest = mongoose.model<IBloodRequest>('BloodRequest', bloodRequestSchema);

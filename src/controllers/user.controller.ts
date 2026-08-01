@@ -3,6 +3,7 @@ import { User } from "../models/user.model";
 import { comparePassword, hashPassword } from "../utils/bcrypt.util";
 import { AppError } from "../utils/customError.util";
 import { cathAsync } from "../utils/catchAsync.util";
+import { upload } from "../utils/cloudinary.util";
 import { sendResponse } from "../utils/sendResponse.util";
 
 export const register = cathAsync(
@@ -50,7 +51,11 @@ export const register = cathAsync(
     });
 
     if (file) {
-      newUser.profile_image = file.path;
+      const {path, public_id} = await upload(file,"/profile_images");
+      newUser.profile_image = {
+        path : path,
+        public_id : public_id,
+      };
     }
 
     await newUser.save();
