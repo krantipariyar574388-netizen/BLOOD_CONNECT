@@ -5,6 +5,7 @@ import { AppError } from "../utils/customError.util";
 import { cathAsync } from "../utils/catchAsync.util";
 import { upload } from "../utils/cloudinary.util";
 import { sendResponse } from "../utils/sendResponse.util";
+import { generateJwtToken } from "../utils/jwt.util";
 
 export const register = cathAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -92,20 +93,18 @@ export const login = cathAsync(
     const isPasswordMatched = await comparePassword(password, user.password);
     if (!isPasswordMatched) throw new AppError("Invalid credentials", 400);
 
+    const access_token = generateJwtToken({
+      _id : user._id,
+      email : user.email,
+      role : user.role,
+    });
+    
+    const { password : p, __v, ...rest } = user.toObject();
+
     sendResponse(res, {
       statusCode: 200,
       message: "Logged in successfully!",
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        bloodGroup: user.bloodGroup,
-        district: user.district,
-        role: user.role,
-        profile_image: user.profile_image,
-        isAvailable: user.isAvailable,
-      },
+      data: {user :rest, access_token},
     });
   }
 );
