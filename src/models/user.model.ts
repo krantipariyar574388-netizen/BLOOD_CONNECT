@@ -16,6 +16,8 @@ export interface IUser extends Document {
   };
   lastDonationDate?: Date | null;
   isAvailable: boolean;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiry?: Date | null;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -65,6 +67,16 @@ const userSchema = new mongoose.Schema<IUser>(
     isAvailable: {
       type: Boolean,
       default: true,
+    },
+    resetPasswordToken : {
+      type : String,
+      default: null,
+      select : false,
+    },
+    resetPasswordExpiry : {
+      type : Date,
+      default : null,
+      select : false
     },
   },
   {

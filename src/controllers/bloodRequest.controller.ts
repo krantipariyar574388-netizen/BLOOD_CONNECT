@@ -1,13 +1,14 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { BloodRequest } from "../models/bloodRequest.model";
 import { RequestUrgency, RequestStatus } from "../@types/enum.types";
 import { AppError } from "../utils/customError.util";
 import { cathAsync } from "../utils/catchAsync.util";
 import { sendResponse } from "../utils/sendResponse.util";
 import { deleteFileFromCloudinary, upload } from "../utils/cloudinary.util";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
 export const createBloodRequest = cathAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const {
       patient,
       bloodGroup,
@@ -17,8 +18,9 @@ export const createBloodRequest = cathAsync(
       phone,
       requiredDate,
       urgency,
-      requester,
     } = req.body;
+
+    const requester = req.user?._id;
 
     const file = req.file;
     console.log(file);
@@ -86,7 +88,7 @@ export const createBloodRequest = cathAsync(
 );
 
 export const getAllBloodRequests = cathAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { bloodGroup, district, status, urgency } = req.query;
 
     let filter: any = {};
@@ -125,7 +127,7 @@ export const getAllBloodRequests = cathAsync(
 );
 
 export const getBloodRequestById = cathAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     const request = await BloodRequest.findById(id).populate(
@@ -147,7 +149,7 @@ export const getBloodRequestById = cathAsync(
 );
 
 export const updateBloodRequestStatus = cathAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const { status } = req.body;
     const file = req.file;
@@ -186,12 +188,10 @@ export const updateBloodRequestStatus = cathAsync(
 );
 
 export const deleteBloodRequest = cathAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const deletedRequest = await BloodRequest.findById({
-      _id : id,
-    });
+    const deletedRequest = await BloodRequest.findById(id);
 
     if (!deletedRequest) {
       throw new AppError("Blood request not found", 404);

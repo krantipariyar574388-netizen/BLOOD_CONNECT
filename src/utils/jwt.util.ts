@@ -9,10 +9,10 @@ export interface IJwtPayload {
     role : UserRole;
 }
 
-// export interface IJwtReturn extends IJwtPayload {
-//     iat : number;
-//     exp : number;
-// }
+export interface IJwtReturn extends IJwtPayload {
+    iat : number;
+    exp : number;
+}
 
 export const generateJwtToken = (payload : IJwtPayload) : string => {
     try {
@@ -25,11 +25,11 @@ export const generateJwtToken = (payload : IJwtPayload) : string => {
     }
 }
 
-// export const verifyToken = (token : string) : IJwtReturn | null => {
-//     try {
-//         return jwt.verify(token, ENV_CONFIG.JWT_SECRET) as IJwtReturn;
-//     } catch (error) {
-//         console.log(error);
-//         return null;
-//     }
-// };
+export const verifyToken = (token : string) : IJwtReturn | null => {
+    try {
+        return jwt.verify(token, ENV_CONFIG.JWT_SECRET as string) as IJwtReturn;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
